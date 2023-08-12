@@ -2,26 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
+    --background-color: #fff;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+    :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-start-rgb: 0, 0, 0;
+        --background-end-rgb: 0, 0, 0;
+    }
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    color: rgb(var(--foreground-rgb));
+    background: var(--background-color);
+    /* font-family: 'Karla', sans-serif; */
+}
+
+svg.continueIcon {
+    float: right;
+}
+
+p {
+    margin-bottom: 1.25em;
+}
+
+@layer utilities {
+    .post-content p {
+        @apply pb-4 text-lg;
+    }
+
+    .post-content a {
+        @apply underline text-blue-400 hover: text-blue-600;
+    }
+
+    .post-content ul {
+        @apply pb-4 list-disc list-inside text-yellow-600 text-lg;
+    }
+
+    .post-content figure {
+        @apply pb-4;
+    }
+
+    .post-content figure figcaption {
+        @apply text-center py-2;
+    }
+
+    .post-content h2 {
+        @apply text-2xl font-bold py-4;
+    }
+
+    .post-content h3 {
+        @apply text-xl font-bold py-4;
+    }
 }

@@ -1,44 +1,72 @@
-import Image from 'next/image'
-import Head from 'next/head'
-import Header from '@/components/Header'
-import Sidebar from '@/components/Sidebar'
-import Footer from '@/components/Footer';
-import { getPostList, allCategory } from '../../lib/posts';
-import { useState } from 'react'
-import Link from 'next/link'
-import FeaturedImage from '@/components/FeaturedImage'
-import Date from '@/components/Date'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch, faAmbulance } from "@fortawesome/free-solid-svg-icons";
-import LoadMore from '@/components/LoadMore';
+import Head from "next/head";
+import { allCategory, getCategoryDetails, getCategorySlugs, getPostList } from "../../../lib/posts";
+import { useState } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import FeaturedImage from "@/components/FeaturedImage";
+import Link from "next/link";
+import Sidebar from "@/components/Sidebar";
+import Date from "@/components/Date";
+import LoadMore from "@/components/LoadMore";
 
-export async function getStaticProps() {
-    const allPosts = await getPostList();
-    const allCategories = await allCategory();
+export async function getStaticPaths() {
+    const categories = await getCategorySlugs();
 
     return {
-        props: {
-            allPosts,
-            allCategories,
-        }
+        paths: categories.map((category) => (
+            {
+                params: {
+                    categoryName: category.slug,
+                }
+            }
+        )),
+        fallback: false,
     }
 }
 
-const allPosts = await getPostList();
+export async function getStaticProps({ params }) {
+    const allCategories = await allCategory();
+
+    const categoryPosts = await getPostList(null, { key: "categoryName", value: params.categoryName });
+
+    const categoryDetails = await getCategoryDetails(params.categoryName);
+
+    return {
+        props: {
+            allCategories,
+            categoryPosts,
+            categoryDetails,
+        },
+    };
+}
+
 const allCategories = await allCategory();
 
-export default function Home({ allPosts, allCategories }) {
-    const [posts, setPosts] = useState(allPosts);
+export default function CategoryPosts({ allCategories, categoryPosts, categoryDetails }) {
     const [categories, setCategories] = useState(allCategories);
+    const [posts, setPosts] = useState(categoryPosts);
+
 
     return (
         <>
             <Head>
-                <title key="pagetitle">Post Verses Blog</title>
+                <title>{`${categoryDetails.name} - Post Verses`}</title>
                 <meta name="description" content="technology" key="meta-description" />
             </Head>
 
             <Header categories={categories} />
+
+            <div className="container mx-auto py-10 border-y">
+                <section className="w-full flex flex-col items-center py-6">
+                    <h1 className="text-4xl font-bold">{categoryDetails.name}</h1>
+
+                    <p className="text-2xl mt-3">
+                    {categoryDetails.count > 0 ? `Category ${ categoryDetails.name } has ${ categoryDetails.count } posts.` : `Category ${categoryDetails.name} has no post.`}
+                    </p>
+                    
+                    <p>{categoryDetails.description}</p>
+                </section>
+            </div>
 
             <div className="container mx-auto flex flex-wrap py-6">
                 <section className="w-full md:w-2/3 flex flex-col items-center px-3">
